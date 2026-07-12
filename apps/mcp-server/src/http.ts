@@ -33,13 +33,6 @@ function handleOptions(res: ServerResponse): void {
 async function main(): Promise<void> {
   const env = loadMcpEnv();
 
-  const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
-  });
-
-  const server = createMcpServer();
-  await server.connect(transport);
-
   const httpServer = createServer(async (req, res) => {
     if (req.method === 'OPTIONS') {
       handleOptions(res);
@@ -63,7 +56,29 @@ async function main(): Promise<void> {
       return;
     }
 
-    await transport.handleRequest(req, res);
+    // Stateless Streamable HTTP requires a fresh transport (and server) per request.
+    const transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: undefined,
+    });
+    const server = createMcpServer();
+
+    try {
+      await server.connect(transport);
+      await transport.handleRequest(req, res);
+      res.on('close', () => {
+        void transport.close();
+        void server.close();
+      });
+    } catch (error) {
+      console.error('MCP HTTP request failed:', error);
+      if (!res.headersSent) {
+        sendJson(res, 500, {
+          jsonrpc: '2.0',
+          error: { code: -32603, message: 'Internal server error' },
+          id: null,
+        });
+      }
+    }
   });
 
   httpServer.listen(env.MCP_HTTP_PORT, env.MCP_HTTP_HOST, () => {

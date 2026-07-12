@@ -1,15 +1,9 @@
 import type { ToolName } from '@support-desk/shared';
 import {
   AUDIT_ACTORS,
-  buildGetTicketResult,
-  buildListAgentsResult,
-  buildRecentActivityResult,
-  buildSearchTicketsResult,
-  getTicketInputSchema,
-  listAgentsInputSchema,
-  recentActivityInputSchema,
-  searchTicketsInputSchema,
-  TOOL_NAMES,
+  executeSupportTool,
+  isWebAssistTool,
+  type ToolHandlerDeps,
 } from '@support-desk/shared';
 import {
   getTicketById,
@@ -18,6 +12,13 @@ import {
   recordAuditLog,
   searchTickets,
 } from './ticket.service.js';
+
+const localToolDeps: ToolHandlerDeps = {
+  searchTickets: (args) => searchTickets(args),
+  getTicket: (ticketId) => getTicketById(ticketId),
+  listAgents: (activeOnly) => listAgents(activeOnly),
+  listRecentAudit: (limit) => listRecentAuditLogs(limit),
+};
 
 export async function executeAssistTool(
   toolName: ToolName,
@@ -54,27 +55,9 @@ async function runHandler(
   toolName: ToolName,
   input: unknown,
 ): Promise<{ text: string; output?: unknown }> {
-  switch (toolName) {
-    case TOOL_NAMES.SEARCH_TICKETS: {
-      const args = searchTicketsInputSchema.parse(input);
-      return buildSearchTicketsResult(await searchTickets(args), 'compact');
-    }
-    case TOOL_NAMES.GET_TICKET: {
-      const args = getTicketInputSchema.parse(input);
-      return buildGetTicketResult(await getTicketById(args.ticketId), args.ticketId, 'compact');
-    }
-    case TOOL_NAMES.LIST_AGENTS: {
-      const args = listAgentsInputSchema.parse(input);
-      return buildListAgentsResult(await listAgents(args.activeOnly), {
-        activeOnly: args.activeOnly,
-        style: 'compact',
-      });
-    }
-    case TOOL_NAMES.GET_RECENT_AGENT_ACTIVITY: {
-      const args = recentActivityInputSchema.parse(input);
-      return buildRecentActivityResult(await listRecentAuditLogs(args.limit), 'compact');
-    }
-    default:
-      throw new Error(`Tool ${toolName} is not available in the web assist panel.`);
+  if (!isWebAssistTool(toolName)) {
+    throw new Error(`Tool ${toolName} is not available in the web assist panel.`);
   }
+
+  return executeSupportTool(toolName, input, localToolDeps, 'compact');
 }

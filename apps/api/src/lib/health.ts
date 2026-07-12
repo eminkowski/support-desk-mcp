@@ -1,9 +1,7 @@
+import type { HealthStatus } from '@support-desk/shared';
 import { prisma } from './prisma.js';
 
-export type HealthStatus = {
-  status: 'ok' | 'degraded';
-  database: 'ok' | 'unavailable';
-};
+export type { HealthStatus };
 
 export async function getHealthStatus(): Promise<HealthStatus> {
   try {

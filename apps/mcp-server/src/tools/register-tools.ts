@@ -1,18 +1,9 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import type {
-  AgentsListResponse,
-  ApiClient,
-  AuditListResponse,
-  CreateCommentApiResponse,
-  TicketResponse,
-  TicketsListResponse,
-} from '@support-desk/shared';
+import type { ApiClient } from '@support-desk/shared';
 import {
   addCommentInputSchema,
-  buildGetTicketResult,
-  buildListAgentsResult,
-  buildRecentActivityResult,
-  buildSearchTicketsResult,
+  createApiClientToolDeps,
+  executeSupportTool,
   getTicketInputSchema,
   listAgentsInputSchema,
   recentActivityInputSchema,
@@ -22,6 +13,8 @@ import {
 import { rejectTool, runTool } from '../lib/run-tool.js';
 
 export function registerTools(server: McpServer, client: ApiClient): void {
+  const deps = createApiClientToolDeps(client);
+
   server.registerTool(
     TOOL_NAMES.SEARCH_TICKETS,
     {
@@ -29,17 +22,9 @@ export function registerTools(server: McpServer, client: ApiClient): void {
       inputSchema: searchTicketsInputSchema,
     },
     (args) =>
-      runTool(client, TOOL_NAMES.SEARCH_TICKETS, args, async () => {
-        const result = await client.get<TicketsListResponse>('/api/tickets', {
-          query: args.query,
-          status: args.status,
-          priority: args.priority,
-          assigneeId: args.assigneeId,
-          limit: args.limit,
-        });
-
-        return buildSearchTicketsResult(result.tickets, 'verbose');
-      }),
+      runTool(client, TOOL_NAMES.SEARCH_TICKETS, args, () =>
+        executeSupportTool(TOOL_NAMES.SEARCH_TICKETS, args, deps, 'verbose'),
+      ),
   );
 
   server.registerTool(
@@ -49,10 +34,9 @@ export function registerTools(server: McpServer, client: ApiClient): void {
       inputSchema: getTicketInputSchema,
     },
     (args) =>
-      runTool(client, TOOL_NAMES.GET_TICKET, args, async () => {
-        const result = await client.get<TicketResponse>(`/api/tickets/${args.ticketId}`);
-        return buildGetTicketResult(result.ticket, args.ticketId, 'verbose');
-      }),
+      runTool(client, TOOL_NAMES.GET_TICKET, args, () =>
+        executeSupportTool(TOOL_NAMES.GET_TICKET, args, deps, 'verbose'),
+      ),
   );
 
   server.registerTool(
@@ -62,16 +46,9 @@ export function registerTools(server: McpServer, client: ApiClient): void {
       inputSchema: listAgentsInputSchema,
     },
     (args) =>
-      runTool(client, TOOL_NAMES.LIST_AGENTS, args, async () => {
-        const result = await client.get<AgentsListResponse>('/api/agents', {
-          activeOnly: args.activeOnly,
-        });
-
-        return buildListAgentsResult(result.agents, {
-          activeOnly: args.activeOnly,
-          style: 'verbose',
-        });
-      }),
+      runTool(client, TOOL_NAMES.LIST_AGENTS, args, () =>
+        executeSupportTool(TOOL_NAMES.LIST_AGENTS, args, deps, 'verbose'),
+      ),
   );
 
   server.registerTool(
@@ -90,17 +67,9 @@ export function registerTools(server: McpServer, client: ApiClient): void {
         );
       }
 
-      return runTool(client, TOOL_NAMES.ADD_COMMENT, args, async () => {
-        const result = await client.post<CreateCommentApiResponse>(
-          `/api/tickets/${args.ticketId}/comments`,
-          { body: args.body, internal: true },
-        );
-
-        return {
-          text: `Comment added to ticket ${args.ticketId} at ${result.comment.createdAt}.`,
-          output: { commentId: result.comment.id },
-        };
-      });
+      return runTool(client, TOOL_NAMES.ADD_COMMENT, args, () =>
+        executeSupportTool(TOOL_NAMES.ADD_COMMENT, args, deps, 'verbose'),
+      );
     },
   );
 
@@ -111,12 +80,8 @@ export function registerTools(server: McpServer, client: ApiClient): void {
       inputSchema: recentActivityInputSchema,
     },
     (args) =>
-      runTool(client, TOOL_NAMES.GET_RECENT_AGENT_ACTIVITY, args, async () => {
-        const result = await client.get<AuditListResponse>('/api/audit', {
-          limit: args.limit,
-        });
-
-        return buildRecentActivityResult(result.entries, 'verbose');
-      }),
+      runTool(client, TOOL_NAMES.GET_RECENT_AGENT_ACTIVITY, args, () =>
+        executeSupportTool(TOOL_NAMES.GET_RECENT_AGENT_ACTIVITY, args, deps, 'verbose'),
+      ),
   );
 }

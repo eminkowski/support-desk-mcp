@@ -1,9 +1,8 @@
+import type { HealthStatus } from '@support-desk/shared';
+
 const baseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001';
 
-export type HealthStatus = {
-  status: 'ok' | 'degraded';
-  database: 'ok' | 'unavailable';
-};
+export type { HealthStatus };
 
 export async function fetchHealth(): Promise<HealthStatus> {
   const response = await fetch(`${baseUrl}/health`);

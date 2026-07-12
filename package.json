@@ -19,7 +19,7 @@
     "format": "biome format --write .",
     "check": "biome check . && pnpm typecheck",
     "check:fix": "biome check --write .",
-    "ci": "biome ci . && pnpm typecheck && pnpm test",
+    "ci:all": "biome ci . && pnpm typecheck && pnpm test",
     "db:up": "docker compose up -d",
     "db:watch": "docker compose up",
     "db:down": "docker compose down",

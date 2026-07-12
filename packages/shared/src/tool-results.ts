@@ -92,3 +92,13 @@ export function buildRecentActivityResult(
 
   return { text, output: { count: entries.length } };
 }
+
+export function buildAddCommentResult(
+  ticketId: string,
+  comment: { id: string; createdAt: string },
+): ToolTextResult {
+  return {
+    text: `Comment added to ticket ${ticketId} at ${comment.createdAt}.`,
+    output: { commentId: comment.id },
+  };
+}

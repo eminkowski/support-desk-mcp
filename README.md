@@ -136,7 +136,7 @@ docs/
 | `pnpm db:up` | Start Postgres in the background |
 | `pnpm db:watch` | Start Postgres in the foreground (logs in terminal) |
 | `pnpm db:down` | Stop Postgres |
-| `pnpm ci` | Lint, typecheck, tests |
+| `pnpm run ci:all` | Lint, typecheck, tests |
 | `pnpm db:reset` | Reset DB and re-seed |
 
 ## Security
@@ -145,6 +145,10 @@ docs/
 - `/mcp` requires the same key via `Authorization: Bearer` or `x-api-key`.
 - MCP `add_comment` requires `confirmed: true` so the model cannot write by accident.
 - Tool calls are persisted in `AuditLog`.
+
+## Regression testing
+
+Pairs with [Agent Eval Harness](https://github.com/eminkowski/agent-eval-harness): import audit rows or record live MCP runs into trace JSON, then assert on tool choice, write guards, and ordering in CI. Case studies on [minkow.ski](https://minkow.ski/projects/support-desk-mcp) and [Agent Eval Harness](https://minkow.ski/projects/agent-eval-harness).
 
 ## License
 
