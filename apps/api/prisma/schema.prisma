@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Agent {
+  id        String          @id @default(cuid())
+  email     String          @unique
+  name      String
+  active    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  tickets   Ticket[]        @relation("AssignedTickets")
+  comments  TicketComment[]
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  company   String?
+  createdAt DateTime @default(now())
+  tickets   Ticket[]
+}
+
+model Ticket {
+  id          String         @id @default(cuid())
+  subject     String
+  description String
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  customerId  String
+  customer    Customer       @relation(fields: [customerId], references: [id])
+  assigneeId  String?
+  assignee    Agent?         @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  comments    TicketComment[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([assigneeId])
+  @@index([customerId])
+}
+
+model TicketComment {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  body      String
+  internal  Boolean  @default(true)
+  authorId  String?
+  author    Agent?   @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([ticketId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  toolName  String
+  actor     String   @default("mcp-agent")
+  input     Json
+  output    Json?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

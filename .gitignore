@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.turbo/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+*.tsbuildinfo
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+.cursor/mcp.json

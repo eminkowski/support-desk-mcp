@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: supportdesk
+          POSTGRES_PASSWORD: supportdesk
+          POSTGRES_DB: supportdesk
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U supportdesk -d supportdesk"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://supportdesk:supportdesk@localhost:5433/supportdesk
+      API_KEY: local-dev-api-key
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm env:copy
+      - run: pnpm db:migrate
+      - run: pnpm db:seed
+      - run: pnpm ci

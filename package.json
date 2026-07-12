@@ -1,0 +1,35 @@
+{
+  "name": "support-desk-mcp",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @support-desk/api --filter @support-desk/web dev",
+    "dev:api": "pnpm --filter @support-desk/api dev",
+    "dev:web": "pnpm --filter @support-desk/web dev",
+    "dev:mcp": "pnpm --filter @support-desk/mcp-server dev",
+    "dev:mcp:http": "pnpm --filter @support-desk/mcp-server dev:http",
+    "dev:full": "pnpm run --parallel dev:api dev:web dev:mcp:http",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check . && pnpm typecheck",
+    "check:fix": "biome check --write .",
+    "ci": "biome ci . && pnpm typecheck && pnpm test",
+    "db:up": "docker compose up -d",
+    "db:watch": "docker compose up",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @support-desk/api db:migrate",
+    "db:seed": "pnpm --filter @support-desk/api db:seed",
+    "db:reset": "pnpm --filter @support-desk/api db:reset",
+    "env:copy": "cp .env.example apps/api/.env && cp .env.example apps/mcp-server/.env && cp .env.example apps/web/.env",
+    "setup": "pnpm install && pnpm env:copy && pnpm db:up && pnpm db:migrate && pnpm db:seed"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.3"
+  }
+}
