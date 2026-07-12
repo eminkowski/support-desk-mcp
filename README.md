@@ -40,6 +40,14 @@ sequenceDiagram
 
 For tool discovery, transports, the Ask the queue comparison, and a code-level walkthrough, read [How MCP fits together](./docs/how-mcp-works.md).
 
+## Screenshots
+
+| Queue + Ask the queue | Ticket detail | Tool log |
+|---|---|---|
+| ![Ticket list](./docs/screenshots/tickets.png) | ![Ticket detail](./docs/screenshots/ticket.png) | ![Tool log](./docs/screenshots/tool-log.png) |
+
+Case study on [minkow.ski](https://minkow.ski/projects/support-desk-mcp).
+
 ## Quick start (web only)
 
 Requires Node 24+, pnpm 10+, Docker.
