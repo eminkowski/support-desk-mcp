@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { API_BASE_URL, MCP_ENDPOINT_URL, MCP_HTTP_URL } from '../lib/api-config.js';
 import { AUDIT_CHANNEL_LABELS, auditChannelBadgeClass } from '../lib/audit-labels.js';
 import { Badge } from './Badge.js';
 
@@ -13,8 +14,8 @@ export function EntryPathsPanel({ variant = 'full' }: EntryPathsPanelProps) {
         This panel uses{' '}
         <span className="font-mono text-[0.68rem] text-[var(--color-ink)]/80">REST</span> (
         <span className="font-mono text-[0.68rem]">/api/assist</span>). MCP clients use{' '}
-        <span className="font-mono text-[0.68rem] text-[var(--color-ink)]/80">MCP</span> on port
-        3002. Both show up in{' '}
+        <span className="font-mono text-[0.68rem] text-[var(--color-ink)]/80">MCP</span> at{' '}
+        <span className="font-mono text-[0.68rem]">{MCP_HTTP_URL}</span>. Both show up in{' '}
         <Link
           to="/activity"
           className="text-[var(--color-accent)] underline-offset-2 hover:underline"
@@ -39,7 +40,7 @@ export function EntryPathsPanel({ variant = 'full' }: EntryPathsPanelProps) {
           <Badge className={auditChannelBadgeClass('rest')}>{AUDIT_CHANNEL_LABELS.rest}</Badge>
           <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink)]/85">
             Web UI and Ask the queue call <span className="font-mono text-[0.72rem]">/api/*</span>{' '}
-            on port 3001.
+            at {API_BASE_URL}.
           </p>
           <p className="mt-2 font-mono text-[0.68rem] leading-relaxed text-[var(--color-muted)]">
             actors: web-ui, web-assist
@@ -50,7 +51,7 @@ export function EntryPathsPanel({ variant = 'full' }: EntryPathsPanelProps) {
           <Badge className={auditChannelBadgeClass('mcp')}>{AUDIT_CHANNEL_LABELS.mcp}</Badge>
           <p className="mt-2 text-sm leading-relaxed text-[var(--color-ink)]/85">
             MCP clients connect to{' '}
-            <span className="font-mono text-[0.72rem]">localhost:3002/mcp</span>, then the MCP
+            <span className="font-mono text-[0.72rem]">{MCP_ENDPOINT_URL}</span>, then the MCP
             server calls the API.
           </p>
           <p className="mt-2 font-mono text-[0.68rem] leading-relaxed text-[var(--color-muted)]">

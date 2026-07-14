@@ -50,6 +50,7 @@ export type RecordAuditBody = z.infer<typeof recordAuditBodySchema>;
 
 export const assistRequestSchema = z.object({
   message: z.string().trim().min(1).max(500),
+  ticketId: ticketIdField.optional(),
 });
 
 export type AssistRequest = z.infer<typeof assistRequestSchema>;

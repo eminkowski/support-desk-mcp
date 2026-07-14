@@ -112,7 +112,7 @@ export async function registerRoutes(app: FastifyInstance): Promise<void> {
 
       api.post('/assist', async (request) => {
         const body = assistRequestSchema.parse(request.body);
-        return runAssist(body.message);
+        return runAssist(body.message, body.ticketId);
       });
     },
     { prefix: '/api' },

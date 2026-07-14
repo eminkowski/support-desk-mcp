@@ -1,11 +1,14 @@
-import { ActorBadge } from '../components/ActorBadge.js';
-import { AuditLogTable } from '../components/AuditLogTable.js';
+import { useNavigate } from 'react-router-dom';
+import { AuditTimeline } from '../components/AuditTimeline.js';
 import { EntryPathsPanel } from '../components/EntryPathsPanel.js';
 import { StatusMessage } from '../components/StatusMessage.js';
+import { useWorkspace } from '../context/WorkspaceContext.js';
 import { useAuditLog } from '../features/tickets/queries.js';
-import { AUDIT_ACTOR_LEGEND } from '../lib/audit-labels.js';
+import { formatApiUnavailableMessage } from '../lib/health.js';
 
 export function ActivityPage() {
+  const navigate = useNavigate();
+  const { setSelectedTicketId } = useWorkspace();
   const auditQuery = useAuditLog(50);
 
   if (auditQuery.isLoading) {
@@ -15,7 +18,7 @@ export function ActivityPage() {
   if (auditQuery.isError) {
     return (
       <StatusMessage title="Log unavailable">
-        {auditQuery.error.message} Check that the API is running on port 3001.
+        {auditQuery.error.message} {formatApiUnavailableMessage(null)}
       </StatusMessage>
     );
   }
@@ -24,24 +27,23 @@ export function ActivityPage() {
 
   return (
     <div className="space-y-5">
-      <header className="max-w-2xl">
+      <header className="max-w-3xl">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--color-ink)]">Tool log</h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--color-muted)]">
-          Shared audit trail for REST (this app) and MCP clients. Each row shows the transport, tool
-          name, inputs, and results. Refreshes every 10 seconds.
+          Unified audit trail for REST and MCP activity. Proposed writes, confirmations, reads, and
+          blocked MCP calls are all visible here. Refreshes every 10 seconds.
         </p>
       </header>
 
       <EntryPathsPanel />
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[0.68rem] text-[var(--color-muted)]">
-        <span className="tracking-wide uppercase">Legend</span>
-        {AUDIT_ACTOR_LEGEND.map(({ actor }) => (
-          <ActorBadge key={actor} actor={actor} />
-        ))}
-      </div>
-
-      <AuditLogTable entries={entries} />
+      <AuditTimeline
+        entries={entries}
+        onOpenTicket={(ticketId) => {
+          setSelectedTicketId(ticketId);
+          navigate('/');
+        }}
+      />
     </div>
   );
 }

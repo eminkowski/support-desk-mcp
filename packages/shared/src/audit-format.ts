@@ -71,7 +71,8 @@ export function formatAuditInput(toolName: string, input: unknown): string {
       return typeof input.ticketId === 'string' ? `ticket ${input.ticketId}` : '';
     case TOOL_NAMES.LIST_AGENTS:
       return input.activeOnly === false ? 'all agents' : 'active agents';
-    case TOOL_NAMES.ADD_COMMENT: {
+    case TOOL_NAMES.ADD_COMMENT:
+    case TOOL_NAMES.PROPOSE_COMMENT: {
       const ticket = typeof input.ticketId === 'string' ? `ticket ${input.ticketId}` : 'ticket';
       const body = typeof input.body === 'string' ? input.body.trim() : '';
       if (!body) return ticket;
@@ -106,6 +107,10 @@ export function formatAuditOutput(toolName: string, output: unknown): string {
 
   if (typeof output.commentId === 'string') {
     return 'comment saved';
+  }
+
+  if (output.proposed === true) {
+    return 'awaiting confirmation';
   }
 
   return '';

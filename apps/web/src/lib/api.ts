@@ -1,7 +1,8 @@
 import { createApiClient } from '@support-desk/shared';
+import { API_BASE_URL } from './api-config.js';
 
 const client = createApiClient({
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001',
+  baseUrl: API_BASE_URL,
   apiKey: import.meta.env.VITE_API_KEY ?? 'local-dev-api-key',
 });
 

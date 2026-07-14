@@ -18,11 +18,11 @@ export function auditChannelBadgeClass(channel: AuditChannel): string {
 export function getAuditActorDescription(actor: string): string {
   switch (actor) {
     case AUDIT_ACTORS.MCP:
-      return 'MCP client or Inspector';
+      return 'MCP client';
     case AUDIT_ACTORS.WEB_ASSIST:
-      return 'Ask the queue';
+      return 'Assist';
     case AUDIT_ACTORS.WEB_UI:
-      return 'Web form';
+      return 'Operator';
     default:
       return actor;
   }

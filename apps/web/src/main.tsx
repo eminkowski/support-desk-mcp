@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
 import { AppLayout } from './components/AppLayout.js';
 import './index.css';
+import { useWorkspace } from './context/WorkspaceContext.js';
 import { ActivityPage } from './pages/ActivityPage.js';
-import { TicketDetailPage } from './pages/TicketDetailPage.js';
-import { TicketsPage } from './pages/TicketsPage.js';
+import { WorkspacePage } from './pages/WorkspacePage.js';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,6 +16,20 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function TicketSearchRedirect() {
+  const [searchParams] = useSearchParams();
+  const ticketId = searchParams.get('ticket');
+  const { setSelectedTicketId } = useWorkspace();
+
+  useEffect(() => {
+    if (ticketId) {
+      setSelectedTicketId(ticketId);
+    }
+  }, [ticketId, setSelectedTicketId]);
+
+  return <WorkspacePage />;
+}
 
 const rootElement = document.getElementById('root');
 
@@ -29,8 +43,8 @@ createRoot(rootElement).render(
       <BrowserRouter>
         <Routes>
           <Route element={<AppLayout />}>
-            <Route index element={<TicketsPage />} />
-            <Route path="tickets/:ticketId" element={<TicketDetailPage />} />
+            <Route index element={<TicketSearchRedirect />} />
+            <Route path="tickets/:ticketId" element={<WorkspacePage />} />
             <Route path="activity" element={<ActivityPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

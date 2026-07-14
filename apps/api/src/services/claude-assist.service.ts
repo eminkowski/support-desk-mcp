@@ -60,7 +60,7 @@ export function isClaudeAssistEnabled(): boolean {
   return Boolean(loadEnv().ANTHROPIC_API_KEY);
 }
 
-export async function runClaudeAssist(message: string): Promise<AssistResponse> {
+export async function runClaudeAssist(message: string, ticketId?: string): Promise<AssistResponse> {
   const env = loadEnv();
   if (!env.ANTHROPIC_API_KEY) {
     throw new Error('ANTHROPIC_API_KEY is not configured.');
@@ -77,7 +77,10 @@ export async function runClaudeAssist(message: string): Promise<AssistResponse> 
       model: env.ANTHROPIC_MODEL,
       max_tokens: 1024,
       system:
-        'You help support agents query a ticket queue. Use the provided tools for ticket data. Keep replies concise.',
+        'You help support agents query a ticket queue. Use the provided tools for ticket data. Keep replies concise.' +
+        (ticketId
+          ? ` The agent has ticket ${ticketId} selected. If they ask to draft or add an internal comment, tell them to use "Draft internal comment" so the UI can review the write first.`
+          : ''),
       tools: READ_TOOLS,
       messages,
     });

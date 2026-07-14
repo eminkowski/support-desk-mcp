@@ -1,13 +1,15 @@
 # Support Desk MCP
 
-Small support queue with an MCP server on top. Agents can search tickets, read threads, list assignees, and add internal comments. Every tool call is logged with the query, filters, and result details.
+AI-assisted support desk with a polished React workflow UI, typed MCP tools, reviewable write actions, PostgreSQL, and unified audit logging.
 
-You can run the web app without Claude. MCP is an optional way to operate the same queue from a chat client.
+A support desk built to show how AI agents can operate inside real product workflows. A human can work from a dense React queue, use keyboard navigation, ask an assistant for help, review proposed write actions, and see every browser or agent action in one audit trail.
+
+Under the hood: Fastify API, React UI, MCP server, shared Zod tool schemas, PostgreSQL, and a unified audit log across browser and agent activity.
 
 ## What it does
 
 - **REST API** (Fastify, Prisma, Postgres) for tickets, agents, comments, and audit logs.
-- **Web UI** to browse the queue, ask questions in the side panel, read ticket threads, add comments, and watch the tool log update.
+- **Web UI** — TanStack Table queue with saved views, split-pane ticket workspace, command palette (`⌘K`), AI action review for internal comments, and a timeline-style tool log.
 - **MCP server** with five Zod-validated tools. Same business logic as the API; writes require explicit confirmation.
 - **Two transports:** stdio for local Claude setup, Streamable HTTP at `/mcp` for remote Claude connectors.
 
@@ -42,11 +44,11 @@ For tool discovery, transports, the Ask the queue comparison, and a code-level w
 
 ## Screenshots
 
-| Queue + Ask the queue | Ticket detail | Tool log |
+| Review (hero) | Before | After |
 |---|---|---|
-| ![Ticket list](./docs/screenshots/tickets.png) | ![Ticket detail](./docs/screenshots/ticket.png) | ![Tool log](./docs/screenshots/tool-log.png) |
+| ![Action review](./docs/screenshots/action-review.png) | ![Queue workspace](./docs/screenshots/workspace.png) | ![Completed](./docs/screenshots/action-completed.png) |
 
-Case study on [minkow.ski](https://minkow.ski/projects/support-desk-mcp).
+Locked set (Review → Normal → Completed): [docs/screenshot-guide.md](./docs/screenshot-guide.md). Case study on [minkow.ski](https://minkow.ski/projects/support-desk-mcp).
 
 ## Quick start (web only)
 
@@ -60,7 +62,18 @@ pnpm dev
 - Web: http://localhost:5173
 - API: http://localhost:3001
 
-Step-by-step walkthrough: [docs/demo.md](./docs/demo.md)
+## Demo flow (portfolio)
+
+One story to record or screenshot:
+
+1. Open queue → apply **View → Open, high priority** (filter chips visible)
+2. Select a ticket → split-pane detail opens
+3. `⌘K` to search or jump
+4. **Draft internal comment** in Ask the queue
+5. Review proposed action → edit → **Confirm and save**
+6. See comment in thread + activity strip + tool log
+
+Step-by-step: [docs/demo.md](./docs/demo.md) · Screenshots: [docs/screenshot-guide.md](./docs/screenshot-guide.md)
 
 ## Full stack (web + MCP HTTP)
 
@@ -89,13 +102,16 @@ Postgres runs on host port **5433** via Docker. Use `pnpm db:up` to start in the
 
 ## Web UI
 
-| Page | Purpose |
-|------|---------|
-| Tickets | Filterable queue + Ask the queue panel |
-| Ticket detail | Description, thread, add internal comment |
-| Tool log | Audit trail with query/filters and ticket subjects |
+| Surface | Purpose |
+|---------|---------|
+| Queue workspace | Sortable table, saved views, column visibility, row selection, split-pane detail |
+| Ask the queue | Quick searches and draft internal comments for the selected ticket |
+| Action review | Proposed writes shown as reviewable diffs before confirmation |
+| Tool log | Timeline audit trail with actor/transport badges and expandable details |
 
-Ask the queue and MCP both log to Tool log. Actors are labeled (`web-assist`, `web-ui`, `mcp-agent`).
+Press `⌘K` (or `Ctrl+K`) for the command palette. Deep links: `/tickets/:ticketId` or `/?ticket=:ticketId`.
+
+Ask the queue, browser forms, and MCP all log to Tool log. Actors are labeled (`web-assist`, `web-ui`, `mcp-agent`).
 
 ## MCP tools
 

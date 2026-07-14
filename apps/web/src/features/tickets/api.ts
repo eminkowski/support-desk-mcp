@@ -6,9 +6,10 @@ import type {
   TicketsListResponse,
 } from '@support-desk/shared';
 import { apiGet, apiPost } from '../../lib/api.js';
-import type { TicketFilters } from './types.js';
+import { getDemoSimulations } from '../../lib/demo-simulations.js';
+import type { TicketQueryParams } from './types.js';
 
-export function fetchTickets(filters: TicketFilters): Promise<TicketsListResponse> {
+export function fetchTickets(filters: TicketQueryParams): Promise<TicketsListResponse> {
   return apiGet<TicketsListResponse>('/api/tickets', {
     query: filters.query,
     status: filters.status,
@@ -31,6 +32,12 @@ export function fetchAuditLog(limit = 50): Promise<AuditListResponse> {
 }
 
 export function createComment(ticketId: string, body: string): Promise<CreateCommentApiResponse> {
+  if (getDemoSimulations().saveFailure) {
+    return Promise.reject(
+      new Error('Simulated save failure: the API did not accept this comment.'),
+    );
+  }
+
   return apiPost<CreateCommentApiResponse>(`/api/tickets/${ticketId}/comments`, {
     body,
     internal: true,

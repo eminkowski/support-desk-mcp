@@ -12,6 +12,8 @@
   "dependencies": {
     "@support-desk/shared": "workspace:*",
     "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-table": "^8.21.3",
+    "cmdk": "^1.1.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.9.4"

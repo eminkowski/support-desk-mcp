@@ -3,8 +3,11 @@ export const TOOL_NAMES = {
   GET_TICKET: 'get_ticket',
   LIST_AGENTS: 'list_agents',
   ADD_COMMENT: 'add_comment',
+  PROPOSE_COMMENT: 'propose_comment',
   GET_RECENT_AGENT_ACTIVITY: 'get_recent_agent_activity',
 } as const;
+
+export const DRAFT_COMMENT_LABEL = 'Draft internal comment';
 
 export type ToolName = (typeof TOOL_NAMES)[keyof typeof TOOL_NAMES];
 

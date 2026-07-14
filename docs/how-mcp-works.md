@@ -218,6 +218,6 @@ The model can propose a call, but the application still decides what is valid an
 | Ask the queue routing | `apps/api/src/services/assist.service.ts` |
 | Quick search definitions | `packages/shared/src/quick-searches.ts` |
 | Claude assist (optional) | `apps/api/src/services/claude-assist.service.ts` |
-| Audit log UI | `apps/web/src/components/AuditLogTable.tsx` |
+| Audit log UI | `apps/web/src/components/AuditTimeline.tsx` |
 
 For connection examples, continue with [MCP client setup](./mcp-clients.md). For a runnable walkthrough, see [Walkthrough](./demo.md).

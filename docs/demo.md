@@ -17,10 +17,21 @@ pnpm db:watch
 
 Open http://localhost:5173
 
-1. **Tickets** - filter by status or priority, search by subject.
-2. **Ask the queue** - try "Show open tickets" or "Any high priority tickets?". Replies show in the panel; the same call is logged under Tool log.
-3. Open a ticket - read the thread, add an internal comment. That write also shows up in Tool log as `add_comment` from `web-ui`.
-4. **Tool log** - confirm each row shows filters or the question, result count, and ticket subjects where applicable.
+## Demo flow (one story)
+
+Record or screenshot this sequence:
+
+1. Open http://localhost:5173
+2. Choose **View → Open, high priority** — confirm filter chips appear
+3. Select a ticket — split-pane detail and activity strip load
+4. Press **⌘K** — search or jump (optional, good for video)
+5. Click **Draft internal comment** in Ask the queue
+6. Review the proposed action — preview, safety copy, edit if needed
+7. **Confirm and save** — comment appears in thread
+8. Check **Recent activity** in the detail pane
+9. Open **Tool log** — `propose_comment` and `add_comment` in timeline
+
+Screenshot capture: [screenshot-guide.md](./screenshot-guide.md)
 
 Health check (includes database):
 
@@ -67,10 +78,11 @@ See [mcp-clients.md](./mcp-clients.md) for Claude Code or Claude Desktop setup. 
 
 ## Highlights
 
-- Support queue with filters and ticket detail.
+- Dense queue workspace: TanStack Table, saved views, split-pane detail, command palette.
+- AI action review: draft internal comments require human confirmation before write.
 - MCP tools backed by the same REST API and Zod schemas.
-- Tool log as an audit trail (query, filters, counts, ticket subjects).
-- Writes gated (`confirmed` on MCP, internal comments from the web UI).
+- Tool log as a timeline audit trail (actor, transport, read/write, expandable details).
+- Writes gated (`confirmed` on MCP, review card on web assist, direct form on web UI).
 - Two transports: stdio for local clients, Streamable HTTP for remote connectors.
 
 ## Screenshots

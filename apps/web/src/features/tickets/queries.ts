@@ -6,9 +6,9 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { createComment, fetchAgents, fetchAuditLog, fetchTicket, fetchTickets } from './api.js';
-import type { TicketFilters } from './types.js';
+import type { TicketQueryParams } from './types.js';
 
-export function useTickets(filters: TicketFilters) {
+export function useTickets(filters: TicketQueryParams) {
   return useQuery({
     queryKey: ['tickets', filters],
     queryFn: () => fetchTickets(filters),
@@ -45,6 +45,7 @@ export function useAddComment(ticketId: string) {
     mutationFn: (body: string) => createComment(ticketId, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ticket', ticketId] });
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
       queryClient.invalidateQueries({ queryKey: ['audit'] });
     },
   });

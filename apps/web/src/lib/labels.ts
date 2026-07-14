@@ -43,23 +43,19 @@ export function priorityBadgeClass(priority: TicketPriority): string {
   }
 }
 
-export function priorityStripeClass(priority: TicketPriority): string {
-  switch (priority) {
-    case 'LOW':
-      return 'bg-[#c8c2b8]';
-    case 'MEDIUM':
-      return 'bg-[#7a9eb0]';
-    case 'HIGH':
-      return 'bg-[#c9923f]';
-    case 'URGENT':
-      return 'bg-[#b4533c]';
-  }
-}
-
 export function formatDateTime(value: string): string {
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
+  }).format(new Date(value));
+}
+
+export function formatCompactDateTime(value: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
   }).format(new Date(value));
 }
 
